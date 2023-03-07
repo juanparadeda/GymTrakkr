@@ -1,27 +1,15 @@
-import { StatusBar } from "expo-status-bar";
-import { TextInput } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
-import TestComponent from "./src/components/TestComponent";
-import { Button } from "react-native";
-import login from "./src/api/authController";
-
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import LoginAndRegister from "./src/screens/LoginAndRegister";
+const Stack = createNativeStackNavigator();
 export default function App() {
-  const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
-  const handleSubmit = () => {
-    login(email, pwd);
-  };
-
   return (
-    <View style={styles.container}>
-      <Text>This is the GymApp</Text>
-      <TestComponent />
-      <TextInput placeholder="E-mail" onChangeText={setEmail} />
-      <TextInput placeholder="Contraseña" onChangeText={setPwd} />
-      <StatusBar style="auto" />
-      <Button onPress={handleSubmit} title="Submitir" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginAndRegister} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
