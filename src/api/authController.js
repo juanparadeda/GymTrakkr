@@ -6,12 +6,10 @@ import { auth } from "./firestoreConfig";
 
 //const auth = getAuth();
 
-const login = (email, pwd) => {
+const login = (email, pwd, setUser) => {
   signInWithEmailAndPassword(auth, email, pwd)
     .then((userCredential) => {
-      console.log(JSON.stringify(userCredential.user, null, 2));
-      const user = userCredential.user;
-      // ...
+      setUser(userCredential.user);
     })
     .catch((error) => {
       const errorCode = error.code;
