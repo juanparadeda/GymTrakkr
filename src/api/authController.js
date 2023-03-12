@@ -2,7 +2,10 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+import { useState } from "react";
 import { auth } from "./firestoreConfig";
+import { db } from "./firestoreConfig";
 
 //const auth = getAuth();
 
@@ -17,16 +20,15 @@ const login = (email, pwd, setUser) => {
     });
 };
 
-const register = (email, pwd) => {
-  createUserWithEmailAndPassword(auth, email, pwd)
-    .then((userCredential) => {
-      console.log(JSON.stringify(userCredential.user, null, 2));
-      const user = userCredential.user;
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
+const register = async (emailInput, pwd) => {
+  const register = await createUserWithEmailAndPassword(auth, emailInput, pwd);
+  const {
+    user: { uid, email },
+  } = register;
+  await setDoc(doc(db, "users", uid), {
+    email: email,
+  });
+  //console.log(JSON.stringify(userCollection, null, 2));
 };
 
 export { login, register };

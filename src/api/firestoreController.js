@@ -10,8 +10,8 @@ const processProdIdfromSnapshot = (snapshot) => {
   return list;
 };
 
-const getDataFromFirebase = async () => {
-  const q = query(collection(db, "exercises"));
+const getDataFromFirebase = async (col) => {
+  const q = query(collection(db, col));
   const querySnapshot = await getDocs(q);
   const data = processProdIdfromSnapshot(querySnapshot);
   return data;

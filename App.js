@@ -8,14 +8,18 @@ import MainNavigation from "./src/navigation/MainNavigation";
 const Stack = createNativeStackNavigator();
 export default function App() {
   const auth = getAuth();
-  const defaultRoute = onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // const uid = user.uid;
-      return "Main Navigation";
-    } else {
-      return "Login";
-    }
-  });
+  const user = auth.currentUser;
+  const defaultRoute = user ? "Main Navigation" : "Login";
+  //const defaultRoute = onAuthStateChanged(auth, (user) => {
+  //  console.log(user);
+  //  if (user) {
+  //    // const uid = user.uid;
+  //    //console.log(`Usuario loggeado previamente`);
+  //    return "Main Navigation";
+  //  } else {
+  //    return "Login";
+  //  }
+  //});
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={`${defaultRoute}`}>
