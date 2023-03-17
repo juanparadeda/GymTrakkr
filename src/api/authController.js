@@ -27,6 +27,7 @@ const register = async (emailInput, pwd) => {
   } = register;
   await setDoc(doc(db, "users", uid), {
     email: email,
+    routine: [],
   });
 };
 

@@ -1,4 +1,12 @@
-import { getDocs, query, collection, where } from "firebase/firestore";
+import {
+  getDocs,
+  query,
+  collection,
+  where,
+  updateDoc,
+  arrayUnion,
+  doc,
+} from "firebase/firestore";
 import { db } from "./firestoreConfig";
 
 const processProdIdfromSnapshot = (snapshot) => {
@@ -17,4 +25,9 @@ const getCollectionFromFirebase = async (col) => {
   return data;
 };
 
-export { getCollectionFromFirebase };
+const addExerciseToRoutine = async (exercise, uid) => {
+  const docRef = doc(db, "users", uid);
+  await updateDoc(docRef, { routine: arrayUnion(exercise) });
+};
+
+export { getCollectionFromFirebase, addExerciseToRoutine };

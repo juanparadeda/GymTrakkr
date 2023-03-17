@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { View, Text, SafeAreaView } from "react-native";
-import { getCollectionFromFirebase } from "../api/firestoreController";
+import {
+  getCollectionFromFirebase,
+  addExerciseToRoutine,
+} from "../api/firestoreController";
+import { getAuth } from "firebase/auth";
 import { SearchBar, ListItem, Button, Icon, Input } from "@rneui/themed";
 import makeStringStd from "../functions/makeStringStd";
 
@@ -13,6 +17,12 @@ const searchArray = (array, string = "") => {
   return searchResults;
 };
 
+const handleAddExercise = (exercise) => {
+  const auth = getAuth();
+  const user = auth.currentUser.uid;
+  addExerciseToRoutine(exercise, user);
+};
+
 const AddExercise = () => {
   const [exercises, setExercises] = useState([]);
   const [searchString, setSearchString] = useState("");
@@ -23,8 +33,7 @@ const AddExercise = () => {
   useEffect(() => {
     let res = searchArray(exercises, searchString);
     setSearchResults(res);
-  }, [searchString]);
-
+  }, [searchString, exercises]);
   return (
     <SafeAreaView>
       <SearchBar
@@ -46,6 +55,7 @@ const AddExercise = () => {
               >
                 <ListItem.Title>{exercise.name}</ListItem.Title>
                 <Icon
+                  onPress={() => handleAddExercise(exercise)}
                   color="red"
                   name="add-circle-outline"
                   type="material"
