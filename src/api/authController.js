@@ -28,7 +28,6 @@ const register = async (emailInput, pwd) => {
   await setDoc(doc(db, "users", uid), {
     email: email,
   });
-  //console.log(JSON.stringify(userCollection, null, 2));
 };
 
 export { login, register };

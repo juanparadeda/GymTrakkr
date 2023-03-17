@@ -12,19 +12,19 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { FAB, Divider, ListItem } from "@rneui/themed";
 import RoutineAccordion from "../components/RoutineAccordion";
 
-const Rutinas = () => {
+const Rutinas = ({ navigation }) => {
   const auth = getAuth();
   const user = auth.currentUser;
   user
     ? console.log(JSON.stringify(user, null, 2))
     : console.log(`El usuario es un zapato`);
 
-  const [exercises, setExercises] = useState([]);
-  useEffect(() => {
-    getDataFromFirebase(`exercises`).then((res) => {
-      setExercises(res);
-    });
-  }, []);
+  //const [exercises, setExercises] = useState([]);
+  //useEffect(() => {
+  //  getCollectionFromFirebase(`exercises`).then((res) => {
+  //    setExercises(res);
+  //  });
+  //}, []);
 
   //const [routines, setRoutines] = useState([]);
   //useEffect(() => {
@@ -61,6 +61,7 @@ const Rutinas = () => {
           visible={true}
           icon={{ name: "add", color: "white" }}
           color="#FF5959"
+          onPress={() => navigation.navigate("Agregar Ejercicio")}
         />
       </View>
     </>
