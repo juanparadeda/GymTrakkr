@@ -19,7 +19,6 @@ const searchArray = (array, string = "") => {
 
 const handleAddExercise = (exercise) => {
   const auth = getAuth();
-  console.log(`esto es desde AddExercise.jsm handleAddExercise`, auth);
   const user = auth.currentUser.uid;
   addExerciseToRoutine(exercise, user);
 };
