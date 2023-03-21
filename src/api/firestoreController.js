@@ -2,11 +2,12 @@ import {
   getDocs,
   query,
   collection,
-  where,
   updateDoc,
   arrayUnion,
   doc,
+  getDoc,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "./firestoreConfig";
 
 const processProdIdfromSnapshot = (snapshot) => {
@@ -30,4 +31,22 @@ const addExerciseToRoutine = async (exercise, uid) => {
   await updateDoc(docRef, { routine: arrayUnion(exercise) });
 };
 
-export { getCollectionFromFirebase, addExerciseToRoutine };
+const getCurrentUserFromFirestore = async () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  return user;
+};
+
+const getDocumentFromFirestore = async (col, id) => {
+  const userRef = doc(db, col, id);
+  const data = await getDoc(userRef);
+  const result = data.data();
+  return result;
+};
+
+export {
+  getCollectionFromFirebase,
+  addExerciseToRoutine,
+  getCurrentUserFromFirestore,
+  getDocumentFromFirestore,
+};

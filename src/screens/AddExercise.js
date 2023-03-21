@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, SafeAreaView } from "react-native";
+import { View, Text, SafeAreaView, ScrollView } from "react-native";
 import {
   getCollectionFromFirebase,
   addExerciseToRoutine,
@@ -19,6 +19,7 @@ const searchArray = (array, string = "") => {
 
 const handleAddExercise = (exercise) => {
   const auth = getAuth();
+  console.log(`esto es desde AddExercise.jsm handleAddExercise`, auth);
   const user = auth.currentUser.uid;
   addExerciseToRoutine(exercise, user);
 };
@@ -41,31 +42,33 @@ const AddExercise = () => {
         onChangeText={(text) => setSearchString(text)}
         value={searchString}
       />
-      <ListItem>
-        <ListItem.Content>
-          {searchResults.map((exercise) => {
-            return (
-              <View
-                key={exercise.id}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <ListItem.Title>{exercise.name}</ListItem.Title>
-                <Icon
-                  onPress={() => handleAddExercise(exercise)}
-                  color="red"
-                  name="add-circle-outline"
-                  type="material"
-                  size={40}
-                />
-              </View>
-            );
-          })}
-        </ListItem.Content>
-      </ListItem>
+      <ScrollView>
+        <ListItem>
+          <ListItem.Content>
+            {searchResults.map((exercise) => {
+              return (
+                <View
+                  key={exercise.id}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <ListItem.Title>{exercise.name}</ListItem.Title>
+                  <Icon
+                    onPress={() => handleAddExercise(exercise)}
+                    color="red"
+                    name="add-circle-outline"
+                    type="material"
+                    size={40}
+                  />
+                </View>
+              );
+            })}
+          </ListItem.Content>
+        </ListItem>
+      </ScrollView>
     </SafeAreaView>
   );
 };

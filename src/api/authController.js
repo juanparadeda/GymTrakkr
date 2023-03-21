@@ -3,11 +3,8 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
-import { useState } from "react";
 import { auth } from "./firestoreConfig";
 import { db } from "./firestoreConfig";
-
-//const auth = getAuth();
 
 const login = (email, pwd, setUser) => {
   signInWithEmailAndPassword(auth, email, pwd)
