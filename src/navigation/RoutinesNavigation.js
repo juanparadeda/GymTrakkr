@@ -9,7 +9,11 @@ const RoutinesNavigation = () => {
     <Stack.Navigator>
       <Stack.Screen name="Mi Rutina" component={Routine} />
       <Stack.Screen name="Agregar Ejercicio" component={AddExercise} />
-      <Stack.Screen name="Ejercicio" component={Exercise} />
+      <Stack.Screen
+        name="Ejercicio"
+        component={Exercise}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };

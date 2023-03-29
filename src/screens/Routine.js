@@ -35,33 +35,26 @@ const Routine = ({ navigation }) => {
       {routine &&
         routine.map((exercise) => {
           return (
-            <>
-              {
-                //<Text key={exercise.id}>{exercise.name}</Text>
-              }
-              <ListItem>
-                <Icon
-                  name="weight-lifter"
-                  type="material-community"
-                  color="grey"
+            <ListItem key={exercise.id}>
+              <Icon
+                name="weight-lifter"
+                type="material-community"
+                color="grey"
+                onPress={() => navigation.navigate("Ejercicio", { exercise })}
+              />
+              <ListItem.Content>
+                <ListItem.Title
                   onPress={() => navigation.navigate("Ejercicio", { exercise })}
-                />
-                <ListItem.Content>
-                  <ListItem.Title
-                    onPress={() =>
-                      navigation.navigate("Ejercicio", { exercise })
-                    }
-                  >
-                    {exercise.name}
-                  </ListItem.Title>
-                </ListItem.Content>
-                <Icon
-                  name="trash-can-outline"
-                  type="material-community"
-                  color="grey"
-                />
-              </ListItem>
-            </>
+                >
+                  {exercise.name}
+                </ListItem.Title>
+              </ListItem.Content>
+              <Icon
+                name="trash-can-outline"
+                type="material-community"
+                color="grey"
+              />
+            </ListItem>
           );
         })}
       <FAB

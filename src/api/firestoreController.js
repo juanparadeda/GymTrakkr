@@ -26,11 +26,6 @@ const getCollectionFromFirebase = async (col) => {
   return data;
 };
 
-const addExerciseToRoutine = async (exercise, uid) => {
-  const docRef = doc(db, "users", uid);
-  await updateDoc(docRef, { routine: arrayUnion(exercise) });
-};
-
 const getCurrentUserFromFirestore = async () => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -43,10 +38,33 @@ const getDocumentFromFirestore = async (col, id) => {
   const result = data.data();
   return result;
 };
+const addExerciseToRoutine = async (exercise, uid) => {
+  const docRef = doc(db, "users", uid);
+  await updateDoc(docRef, { routine: arrayUnion(exercise) });
+};
+
+const addSetToTraining = async (set) => {
+  //const set = {
+  //  rawDate: date,
+  //  todayDate: date.toLocaleDateString("es-AR", { dateStyle: "full" }),
+  //  exerciseName: exercise,
+  //  exerciseId: id,
+  //  weight: weight,
+  //  reps: reps,
+  //};
+  const humanDate = new Date(set.rawDate);
+  const todayDate = humanDate.toLocaleDateString("es-AR", {
+    dateStyle: "full",
+  });
+  // console.log(JSON.stringify(set, null, 2));
+  const docRef = doc(db, "users", set.uid);
+  await updateDoc(docRef, { trainings: arrayUnion({ ...set, todayDate }) });
+};
 
 export {
   getCollectionFromFirebase,
   addExerciseToRoutine,
   getCurrentUserFromFirestore,
   getDocumentFromFirestore,
+  addSetToTraining,
 };
