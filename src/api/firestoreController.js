@@ -6,6 +6,7 @@ import {
   arrayUnion,
   doc,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "./firestoreConfig";
@@ -38,6 +39,7 @@ const getDocumentFromFirestore = async (col, id) => {
   const result = data.data();
   return result;
 };
+
 const addExerciseToRoutine = async (exercise, uid) => {
   const docRef = doc(db, "users", uid);
   await updateDoc(docRef, { routine: arrayUnion(exercise) });

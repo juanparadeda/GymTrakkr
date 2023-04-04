@@ -1,14 +1,17 @@
 import React from "react";
-import { Text, Icon } from "@rneui/base";
+import { Text, Icon, Card } from "@rneui/base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, View } from "react-native";
 import { useState } from "react";
-import { Button } from "@rneui/themed";
+import { Button, Divider } from "@rneui/themed";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 import { addSetToTraining } from "../api/firestoreController";
 import { useFocusEffect } from "@react-navigation/native";
 import { getDocumentFromFirestore } from "../api/firestoreController";
+import { ScrollView } from "react-native";
+import { collection, doc, onSnapshot } from "firebase/firestore";
+import { db } from "../api/firestoreConfig";
 
 const Exercise = ({ route }) => {
   const { name, id } = route.params.exercise;
@@ -17,6 +20,7 @@ const Exercise = ({ route }) => {
   const [reps, setReps] = useState(0);
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
+  const [currentSets, setCurrentSets] = useState([]);
 
   onAuthStateChanged(auth, (userFirebase) => {
     if (userFirebase) {
@@ -31,17 +35,28 @@ const Exercise = ({ route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      getDocumentFromFirestore("users", user?.uid)
-        .then((res) => {
-          const exerciseHistory = res.trainings.filter((training) => {
+      user &&
+        onSnapshot(doc(db, "users", user.uid), (doc) => {
+          const response = doc.data();
+          const exerciseHistory = response.trainings?.filter((training) => {
             return training.exerciseId === id;
           });
-          const sortedExerciseHistory = exerciseHistory.sort((a, b) => {
+          const sortedExerciseHistory = exerciseHistory?.sort((a, b) => {
             return a.rawDate > b.rawDate ? -1 : 1;
           });
           setHistory(sortedExerciseHistory);
-        })
-        .catch((e) => console.log(`Error de promise de Routine.js`, e));
+        });
+      //getDocumentFromFirestore("users", user?.uid)
+      //  .then((res) => {
+      //    const exerciseHistory = res.trainings.filter((training) => {
+      //      return training.exerciseId === id;
+      //    });
+      //    const sortedExerciseHistory = exerciseHistory.sort((a, b) => {
+      //      return a.rawDate > b.rawDate ? -1 : 1;
+      //    });
+      //    setHistory(sortedExerciseHistory);
+      //  })
+      //  .catch((e) => console.log(`Error de promise de Routine.js`, e));
     }, [user])
   );
 
@@ -79,80 +94,97 @@ const Exercise = ({ route }) => {
     };
     //console.log(date.toLocaleDateString("es-AR", { dateStyle: "full" }));
     addSetToTraining(set);
-    //setSets([...sets, set]);
+    setCurrentSets([...currentSets, set]);
 
     //console.log(sets);
   };
 
   return (
-    <SafeAreaView style={{ rowGap: 20, flex: 1, alignItems: "center" }}>
-      <Text>{name}</Text>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Icon
-          type="material-community"
-          name="minus-circle"
-          size={60}
-          onPress={handleBigMinusWeight}
-        />
-        <View style={styles.weightAndrepsDisplay}>
-          <Text style={styles.weight}>{weight}</Text>
-          <Text>KG</Text>
+    <ScrollView>
+      <SafeAreaView style={{ rowGap: 20, flex: 1, alignItems: "center" }}>
+        <Text>{name}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Icon
+            type="material-community"
+            name="minus-circle"
+            size={60}
+            onPress={handleBigMinusWeight}
+          />
+          <View style={styles.weightAndrepsDisplay}>
+            <Text style={styles.weight}>{weight}</Text>
+            <Text>KG</Text>
+          </View>
+          <Icon
+            type="material-community"
+            name="plus-circle"
+            size={60}
+            onPress={handleBigPlusWeight}
+          />
         </View>
-        <Icon
-          type="material-community"
-          name="plus-circle"
-          size={60}
-          onPress={handleBigPlusWeight}
-        />
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Icon
-          type="material-community"
-          name="minus-circle"
-          size={60}
-          onPress={handleMinusReps}
-        />
-        <View style={styles.weightAndrepsDisplay}>
-          <Text style={styles.weight}>{reps}</Text>
-          <Text>Reps</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Icon
+            type="material-community"
+            name="minus-circle"
+            size={60}
+            onPress={handleMinusReps}
+          />
+          <View style={styles.weightAndrepsDisplay}>
+            <Text style={styles.weight}>{reps}</Text>
+            <Text>Reps</Text>
+          </View>
+          <Icon
+            type="material-community"
+            name="plus-circle"
+            size={60}
+            onPress={handlePlusReps}
+          />
         </View>
-        <Icon
-          type="material-community"
-          name="plus-circle"
-          size={60}
-          onPress={handlePlusReps}
-        />
-      </View>
-      <View style={{ width: "60%" }}>
-        <Button
-          title="GUARDAR SERIE"
-          disabled={reps === 0}
-          onPress={handleSaveSet}
-          color="black"
-          buttonStyle={{ borderRadius: 60 }}
-        />
-      </View>
-      <Text>HISTORIAL DE SERIES</Text>
-      {history.map((item) => {
-        return (
-          <Text key={item.rawDate}>
-            {item.weight} KG, {item.reps} reps, {item.todayDate}
-          </Text>
-        );
-      })}
-    </SafeAreaView>
+        <View style={{ width: "60%" }}>
+          <Button
+            title="GUARDAR SERIE"
+            disabled={reps === 0}
+            onPress={handleSaveSet}
+            color="black"
+            buttonStyle={{ borderRadius: 60 }}
+          />
+        </View>
+        <Text style={{ fontWeight: "bold", fontSize: 20 }}>HISTORIAL</Text>
+        {/*console.log(JSON.stringify(history, null, 2))*/}
+        {history?.map(
+          (item, i) =>
+            i <= 51 && (
+              <View
+                key={item.rawDate}
+                style={{ rowGap: 20, alignItems: "center" }}
+              >
+                {item.todayDate != history[i - 1]?.todayDate && (
+                  <>
+                    <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+                      {item.todayDate}
+                    </Text>
+                  </>
+                )}
+
+                <Text>
+                  {item.weight} KG, {item.reps} reps
+                </Text>
+              </View>
+            )
+        )}
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
