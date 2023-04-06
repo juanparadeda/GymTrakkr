@@ -1,4 +1,6 @@
 import { useState } from "react";
+import React from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -13,6 +15,7 @@ import { login, register } from "../api/authController";
 import { Icon } from "@rneui/themed";
 import { useEffect } from "react";
 import { isValidEmail } from "../functions/isValidEmail";
+import { isValidPassword } from "../functions/isValidPassword";
 
 const LoginAndRegister = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -24,18 +27,29 @@ const LoginAndRegister = ({ navigation }) => {
   const handleLogin = () => {
     setLoginRegisterError(null);
     login(email, pwd, setUser, setLoginRegisterError, navigation);
-    // user && navigation.navigate("Main Navigation");
   };
   const handleRegister = () => {
     setLoginRegisterError(null);
     const validEmail = isValidEmail(email);
-    !validEmail && setLoginRegisterError(`El email no tiene un formato válido`);
-    register(email, pwd, navigation);
+    const validPassword = isValidPassword(pwd);
+    if (validEmail && validPassword) {
+      register(email, pwd, navigation, setLoginRegisterError);
+    } else {
+      let error = "";
+      !validEmail && (error = `El email no tiene un formato válido. `);
+      !validPassword &&
+        (error =
+          error +
+          `La contraseña debe contener al menos 8 caracteres, una letra minúscula, una mayúscula y un número.`);
+      setLoginRegisterError(error);
+    }
   };
 
-  useEffect(() => {
-    user && navigation.navigate("Main Navigation");
-  }, [user]);
+  useFocusEffect(
+    React.useCallback(() => {
+      user && navigation.navigate("Main Navigation");
+    }, [user])
+  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputBox}>

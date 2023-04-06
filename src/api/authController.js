@@ -13,9 +13,7 @@ const login = (email, pwd, setUser, setLoginRegisterError, navigation) => {
       if (userCredential.user.emailVerified) {
         setUser(userCredential.user);
       } else {
-        sendEmailVerification(userCredential.user).then(() =>
-          navigation.navigate("Email Verification", userCredential.user)
-        );
+        userCredential.user && navigation.navigate("Email Verification");
       }
     })
     .catch((error) => {
@@ -25,7 +23,7 @@ const login = (email, pwd, setUser, setLoginRegisterError, navigation) => {
     });
 };
 
-const register = async (emailInput, pwd, navigation) => {
+const register = async (emailInput, pwd, navigation, setLoginRegisterError) => {
   await createUserWithEmailAndPassword(auth, emailInput, pwd)
     .then(async (res) => {
       const {
@@ -39,7 +37,11 @@ const register = async (emailInput, pwd, navigation) => {
     })
 
     .catch((error) => {
-      console.log(error);
+      console.log(JSON.stringify(error, null, 2));
+      error.code === `auth/email-already-in-use` &&
+        setLoginRegisterError(
+          `Ya existe una cuenta con este email. Iniciá sesión o bien recuperá tu contraseña.`
+        );
     });
 };
 

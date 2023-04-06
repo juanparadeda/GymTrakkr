@@ -3,7 +3,7 @@ import { SafeAreaView, Text, TouchableOpacity } from "react-native";
 import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 
-const VerifyEmail = ({ route, navigation }) => {
+const VerifyEmail = ({ navigation }) => {
   //console.log(JSON.stringify(route.params, null, 2));
   const [user, setUser] = useState(null);
   onAuthStateChanged(auth, (userFirebase) => {
