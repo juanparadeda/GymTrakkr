@@ -7,6 +7,7 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  arrayRemove,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "./firestoreConfig";
@@ -63,7 +64,17 @@ const addSetToTraining = async (set) => {
   await updateDoc(docRef, { trainings: arrayUnion({ ...set, todayDate }) });
 };
 
+const removeExerciseFromRoutine = async (uid, exercise) => {
+  const docRef = doc(db, "users", uid);
+  try {
+    await updateDoc(docRef, { routine: arrayRemove(exercise) });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
+  removeExerciseFromRoutine,
   getCollectionFromFirebase,
   addExerciseToRoutine,
   getCurrentUserFromFirestore,

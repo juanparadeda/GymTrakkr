@@ -10,9 +10,13 @@ const MainNavigation = () => {
       <Tab.Screen
         name="Navegacion rutinas"
         component={RoutinesNavigation}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, title: "Rutina" }}
       />
-      <Tab.Screen name="Mis Entrenamientos" component={Entrenamientos} />
+      <Tab.Screen
+        name="Mis Entrenamientos"
+        component={Entrenamientos}
+        options={{ headerShown: false, title: "Entrenamientos" }}
+      />
     </Tab.Navigator>
   );
 };

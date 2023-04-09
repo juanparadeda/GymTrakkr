@@ -22,19 +22,18 @@ const Exercise = ({ route }) => {
   const [history, setHistory] = useState([]);
   const [currentSets, setCurrentSets] = useState([]);
 
-  onAuthStateChanged(auth, (userFirebase) => {
-    if (userFirebase) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      setUser(userFirebase);
-      // ...
-    } else {
-      setUser(null);
-    }
-  });
-
   useFocusEffect(
     React.useCallback(() => {
+      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
+        if (userFirebase) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          setUser(userFirebase);
+          // ...
+        } else {
+          setUser(null);
+        }
+      });
       user &&
         onSnapshot(doc(db, "users", user.uid), (doc) => {
           const response = doc.data();
@@ -46,17 +45,7 @@ const Exercise = ({ route }) => {
           });
           setHistory(sortedExerciseHistory);
         });
-      //getDocumentFromFirestore("users", user?.uid)
-      //  .then((res) => {
-      //    const exerciseHistory = res.trainings.filter((training) => {
-      //      return training.exerciseId === id;
-      //    });
-      //    const sortedExerciseHistory = exerciseHistory.sort((a, b) => {
-      //      return a.rawDate > b.rawDate ? -1 : 1;
-      //    });
-      //    setHistory(sortedExerciseHistory);
-      //  })
-      //  .catch((e) => console.log(`Error de promise de Routine.js`, e));
+      return unsubscribe;
     }, [user])
   );
 
