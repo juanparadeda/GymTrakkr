@@ -1,11 +1,10 @@
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
@@ -13,20 +12,38 @@ import {
 } from "react-native";
 import { login, register } from "../api/authController";
 import { Icon } from "@rneui/themed";
-import { useEffect } from "react";
 import { isValidEmail } from "../functions/isValidEmail";
 import { isValidPassword } from "../functions/isValidPassword";
+import { auth } from "../api/firestoreConfig";
 
 const LoginAndRegister = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [user, setUser] = useState(null);
+  const [userEmail, setUserEmail] = useState(false);
   const [loginRegisterError, setLoginRegisterError] = useState(null);
-  //const [registerError, setRegisterError] = useState(null);
+  useFocusEffect(
+    React.useCallback(() => {
+      setEmail("");
+      setPwd("");
 
+      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
+        if (userFirebase) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          userFirebase.emailVerified && navigation.navigate("Main Navigation");
+          !userFirebase.emailVerified &&
+            navigation.navigate("Email Verification");
+        } else {
+          //setUser(null);
+        }
+      });
+      return unsubscribe;
+    }, [])
+  );
   const handleLogin = () => {
     setLoginRegisterError(null);
-    login(email, pwd, setUser, setLoginRegisterError, navigation);
+    login(email, pwd, setUser, setLoginRegisterError);
   };
   const handleRegister = () => {
     setLoginRegisterError(null);
@@ -45,11 +62,6 @@ const LoginAndRegister = ({ navigation }) => {
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      user && navigation.navigate("Main Navigation");
-    }, [user])
-  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputBox}>
@@ -66,6 +78,7 @@ const LoginAndRegister = ({ navigation }) => {
             style={styles.input}
             placeholder="E-mail"
             onChangeText={setEmail}
+            value={email}
             selectionColor="#333"
           />
           <TextInput
@@ -73,6 +86,7 @@ const LoginAndRegister = ({ navigation }) => {
             placeholder="Contraseña"
             onChangeText={setPwd}
             secureTextEntry={true}
+            value={pwd}
             selectionColor="#333"
           />
           <Text>{loginRegisterError}</Text>
@@ -81,6 +95,11 @@ const LoginAndRegister = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonLight} onPress={handleRegister}>
             <Text style={styles.text}>Registrate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Password Recovery")}
+          >
+            <Text>¿Te olvidaste la contraseña?</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </View>

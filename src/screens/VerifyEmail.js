@@ -1,29 +1,30 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView, Text, TouchableOpacity } from "react-native";
 import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
-
 const VerifyEmail = ({ navigation }) => {
-  //console.log(JSON.stringify(route.params, null, 2));
   const [user, setUser] = useState(null);
-  onAuthStateChanged(auth, (userFirebase) => {
-    if (userFirebase) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      setUser(userFirebase);
-      // ...
-    } else {
-      setUser(null);
-    }
-  });
+  //console.log(JSON.stringify(route.params, null, 2));
+  useFocusEffect(
+    React.useCallback(() => {
+      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
+        if (userFirebase) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          setUser(userFirebase);
+          sendEmailVerification(userFirebase).catch((error) =>
+            console.log(`DESDE EL VERIFY EMAIL UFE: `, error)
+          );
+        } else {
+          //setUser(null);
+        }
+      });
+      return unsubscribe;
+    }, [])
+  );
 
-  useEffect(() => {
-    sendEmailVerification(user)
-      .then((res) => {
-        console.log(JSON.stringify(res, null, 2));
-      })
-      .catch((error) => console.log(error));
-  }, [user]);
   return (
     <SafeAreaView
       style={{
@@ -55,7 +56,10 @@ const VerifyEmail = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={{ backgroundColor: "#333", borderRadius: 5, width: "55%" }}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => {
+          signOut(auth);
+          navigation.navigate("Login");
+        }}
       >
         <Text
           style={{

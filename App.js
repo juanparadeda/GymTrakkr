@@ -6,27 +6,14 @@ import { auth } from "./src/api/firestoreConfig";
 import LoginAndRegister from "./src/screens/LoginAndRegister";
 import MainNavigation from "./src/navigation/MainNavigation";
 import { useState } from "react";
-import verifyEmail from "./src/screens/VerifyEmail";
+import VerifyEmail from "./src/screens/VerifyEmail";
+import PasswordRecovery from "./src/screens/PasswordRecovery";
 const Stack = createNativeStackNavigator();
 export default function App() {
-  const [user, setUser] = useState(null);
-  // const auth = getAuth();
-  // const user = auth.currentUser;
-  onAuthStateChanged(auth, (userFirebase) => {
-    if (userFirebase) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      setUser(userFirebase);
-      // ...
-    } else {
-      setUser(null);
-    }
-  });
-  console.log(JSON.stringify(user, null, 2));
-  const defaultRoute = user?.emailVerified ? "Main Navigation" : "Login";
+  //const defaultRoute = user?.emailVerified ? "Main Navigation" : "Login";
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={`${defaultRoute}`}>
+      <Stack.Navigator initialRouteName={`Login`}>
         <Stack.Screen
           name="Login"
           component={LoginAndRegister}
@@ -43,7 +30,14 @@ export default function App() {
         />
         <Stack.Screen
           name="Email Verification"
-          component={verifyEmail}
+          component={VerifyEmail}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Password Recovery"
+          component={PasswordRecovery}
           options={{
             headerShown: false,
           }}

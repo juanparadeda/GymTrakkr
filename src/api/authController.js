@@ -2,6 +2,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
+  signOut,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { auth } from "./firestoreConfig";
@@ -9,13 +11,13 @@ import { db } from "./firestoreConfig";
 
 const login = (email, pwd, setUser, setLoginRegisterError, navigation) => {
   signInWithEmailAndPassword(auth, email, pwd)
-    .then((userCredential) => {
-      if (userCredential.user.emailVerified) {
-        setUser(userCredential.user);
-      } else {
-        userCredential.user && navigation.navigate("Email Verification");
-      }
-    })
+    //.then((userCredential) => {
+    //  if (userCredential.user.emailVerified) {
+    //    setUser(userCredential.user);
+    //  } else {
+    //    userCredential.user && navigation.navigate("Email Verification");
+    //  }
+    //})
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -33,7 +35,13 @@ const register = async (emailInput, pwd, navigation, setLoginRegisterError) => {
         email: email,
         routine: [],
       });
-      navigation.navigate("Email Verification");
+      signOut(auth)
+        .then(() => {
+          navigation.navigate("Email Verification");
+        })
+        .catch((e) => {
+          console.log(`Sign Out error: `, e);
+        });
     })
 
     .catch((error) => {
@@ -45,4 +53,18 @@ const register = async (emailInput, pwd, navigation, setLoginRegisterError) => {
     });
 };
 
-export { login, register };
+const resetPassword = (email, setEmailError) => {
+  sendPasswordResetEmail(auth, email)
+    .then((res) => {
+      setEmailError(
+        `Se envió un email con instrucciones para resetear la contraseña. Revisá tu bandeja de entrada, y tu carpeta de SPAM.`
+      );
+    })
+    .catch((error) => {
+      setEmailError(
+        `No existe una cuenta con el email ${email}, verificá el email o bien volvé al Login para registrarte`
+      );
+    });
+};
+
+export { login, register, resetPassword };

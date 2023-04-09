@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import { auth } from "../api/firestoreConfig";
