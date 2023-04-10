@@ -12,6 +12,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, FAB, ListItem, Icon, Divider } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { onSnapshot, doc } from "firebase/firestore";
+import { startCase } from "lodash";
 
 const Routine = ({ navigation }) => {
   const [routine, setRoutine] = useState([]);
@@ -44,7 +45,6 @@ const Routine = ({ navigation }) => {
     }, [user])
   );
   const handleDelete = (exercise) => {
-    console.log(exercise, ` `, user.uid, ` será eliminado`);
     removeExerciseFromRoutine(user.uid, exercise);
   };
   return (
@@ -69,7 +69,7 @@ const Routine = ({ navigation }) => {
                         navigation.navigate("Ejercicio", { exercise })
                       }
                     >
-                      {exercise.name}
+                      {startCase(exercise.name)}
                     </ListItem.Title>
                   </ListItem.Content>
                   <Icon

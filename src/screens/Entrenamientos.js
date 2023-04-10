@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 import { getDocumentFromFirestore } from "../api/firestoreController";
+import { capitalize, startCase } from "lodash";
 
 const Entrenamientos = () => {
   const [user, setUser] = useState(null);
@@ -35,20 +36,19 @@ const Entrenamientos = () => {
   );
 
   return (
-    <SafeAreaView
+    <ScrollView
       style={{
         flex: 1,
-        alignItems: "center",
       }}
     >
-      <ScrollView
+      <View
         style={{
           flex: 1,
           width: "80%",
-          marginHorizontal: "auto",
+          alignSelf: "center",
+          paddingBottom: 30,
         }}
       >
-        <Text>Entrenamientos</Text>
         {history.map((item, i) => {
           return (
             <View
@@ -76,7 +76,7 @@ const Entrenamientos = () => {
                 <Text
                   style={{ fontWeight: "bold", fontSize: 18, marginTop: 7 }}
                 >
-                  {item.exerciseName}
+                  {startCase(item.exerciseName)}
                 </Text>
               )}
 
@@ -86,8 +86,8 @@ const Entrenamientos = () => {
             </View>
           );
         })}
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 };
 
