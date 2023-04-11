@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddExercise from "../screens/AddExercise";
 import Exercise from "../screens/Exercise";
 import Routine from "../screens/Routine";
+import { startCase } from "lodash";
+
 const Stack = createNativeStackNavigator();
 
 const RoutinesNavigation = () => {
@@ -12,7 +14,9 @@ const RoutinesNavigation = () => {
       <Stack.Screen
         name="Ejercicio"
         component={Exercise}
-        options={{ headerShown: false }}
+        options={({ route }) => ({
+          title: startCase(route.params.exercise.name),
+        })}
       />
     </Stack.Navigator>
   );

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { login, register } from "../api/authController";
 import { Icon } from "@rneui/themed";
@@ -115,6 +116,17 @@ const LoginAndRegister = ({ navigation }) => {
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </View>
+      <TouchableOpacity
+        onPress={() =>
+          Linking.openURL(
+            "mailto:juanparadeda@gmail.com?subject=Problemas con GymApp&body=Describí tu problema"
+          )
+        }
+      >
+        <Text style={{ textAlign: "center" }}>Esta es una versión Beta</Text>
+
+        <Text style={{ textAlign: "center" }}>Feedback por acá</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

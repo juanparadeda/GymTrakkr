@@ -1,28 +1,32 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { View, Text, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 import { getDocumentFromFirestore } from "../api/firestoreController";
-import { capitalize, startCase } from "lodash";
+import { startCase } from "lodash";
 
 const Trainings = () => {
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
+        setShowSpinner(true);
         if (userFirebase) {
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/firebase.User
+
           setUser(userFirebase);
           getDocumentFromFirestore("users", userFirebase.uid)
             .then((res) => {
+              setShowSpinner(false);
               const trainings = res.trainings.sort((a, b) => {
                 return a.rawDate > b.rawDate ? -1 : 1;
               });
+
               setHistory(trainings);
             })
             .catch((e) => console.log(e));
@@ -49,6 +53,19 @@ const Trainings = () => {
           paddingBottom: 30,
         }}
       >
+        {showSpinner === true && (
+          <ActivityIndicator
+            size={100}
+            color="grey"
+            style={{ marginTop: 80 }}
+          />
+        )}
+        {history.length === 0 && (
+          <Text style={{ fontSize: 30, textAlign: "center", marginTop: 80 }}>
+            Todavía no tenés historial de entrenamientos registrados. Andá a Mi
+            Rutina, entrá a un ejercicio y agregá las series de tu entrenamiento
+          </Text>
+        )}
         {history.map((item, i) => {
           return (
             <View

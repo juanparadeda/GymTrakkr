@@ -91,7 +91,6 @@ const Exercise = ({ route }) => {
   return (
     <ScrollView>
       <SafeAreaView style={{ rowGap: 20, flex: 1, alignItems: "center" }}>
-        <Text>{name}</Text>
         <View
           style={{
             flexDirection: "row",

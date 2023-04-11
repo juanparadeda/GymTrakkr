@@ -3,9 +3,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import { Dialog } from "@rneui/themed";
-import { TextInput } from "react-native";
 
 const Account = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -33,7 +38,7 @@ const Account = ({ navigation }) => {
   return (
     <>
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Text>Tu email: {user?.email}</Text>
+        <Text style={{ fontSize: 20 }}>Tu email: {user?.email}</Text>
         <TouchableOpacity
           style={styles.buttonLight}
           onPress={() => setlogOutDialogVisible(true)}
@@ -45,6 +50,16 @@ const Account = ({ navigation }) => {
           onPress={() => navigation.navigate("Change Password")}
         >
           <Text style={styles.text}>Cambiar Contraseña</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonLight}
+          onPress={() =>
+            Linking.openURL(
+              "mailto:juanparadeda@gmail.com?subject=Problemas con GymApp&body=Describí tu problema"
+            )
+          }
+        >
+          <Text style={styles.text}>Contactar a Soporte</Text>
         </TouchableOpacity>
       </View>
       <Dialog
@@ -74,6 +89,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#333",
     borderRadius: 10,
+    width: "80%",
   },
   text: {
     color: "white",
