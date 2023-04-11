@@ -9,7 +9,7 @@ import { setDoc, doc } from "firebase/firestore";
 import { auth } from "./firestoreConfig";
 import { db } from "./firestoreConfig";
 
-const login = (email, pwd, setUser, setLoginRegisterError, navigation) => {
+const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
   signInWithEmailAndPassword(auth, email, pwd)
     //.then((userCredential) => {
     //  if (userCredential.user.emailVerified) {
@@ -18,14 +18,23 @@ const login = (email, pwd, setUser, setLoginRegisterError, navigation) => {
     //    userCredential.user && navigation.navigate("Email Verification");
     //  }
     //})
+    .then(() => setShowSpinner(false))
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
+      setShowSpinner(false);
       setLoginRegisterError(`Usuario o Contraseña no válidos`);
     });
+  // setShowSpinner(false);
 };
 
-const register = async (emailInput, pwd, navigation, setLoginRegisterError) => {
+const register = async (
+  emailInput,
+  pwd,
+  navigation,
+  setLoginRegisterError,
+  setShowSpinner
+) => {
   await createUserWithEmailAndPassword(auth, emailInput, pwd)
     .then(async (res) => {
       const {
@@ -42,15 +51,18 @@ const register = async (emailInput, pwd, navigation, setLoginRegisterError) => {
         .catch((e) => {
           console.log(`Sign Out error: `, e);
         });
+      //setShowSpinner(false);
     })
 
     .catch((error) => {
       console.log(JSON.stringify(error, null, 2));
+      //setShowSpinner(false);
       error.code === `auth/email-already-in-use` &&
         setLoginRegisterError(
           `Ya existe una cuenta con este email. Iniciá sesión o bien recuperá tu contraseña.`
         );
     });
+  setShowSpinner(false);
 };
 
 const resetPassword = (email, setEmailError) => {

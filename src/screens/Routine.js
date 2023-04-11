@@ -50,8 +50,8 @@ const Routine = ({ navigation }) => {
   return (
     <>
       <ScrollView>
-        <View style={{ paddingBottom: 100 }}>
-          {routine &&
+        <View style={{ paddingBottom: 100, flex: 1 }}>
+          {routine.length > 0 &&
             routine.map((exercise) => {
               return (
                 <ListItem key={exercise.id}>
@@ -81,6 +81,20 @@ const Routine = ({ navigation }) => {
                 </ListItem>
               );
             })}
+          {routine.length === 0 && (
+            <Text
+              style={{
+                alignSelf: "center",
+                marginTop: 40,
+                fontSize: 30,
+                width: "80%",
+                textAlign: "center",
+              }}
+            >
+              Tu rutina está vacía. Agregá ejercicios presionando el botón "+"
+              de abajo
+            </Text>
+          )}
         </View>
       </ScrollView>
       <FAB

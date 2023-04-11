@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import { login, register } from "../api/authController";
 import { Icon } from "@rneui/themed";
@@ -22,11 +23,12 @@ const LoginAndRegister = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [userEmail, setUserEmail] = useState(false);
   const [loginRegisterError, setLoginRegisterError] = useState(null);
+  const [showSpinner, setShowSpinner] = useState(false);
   useFocusEffect(
     React.useCallback(() => {
       setEmail("");
       setPwd("");
-
+      setShowSpinner(false);
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
           // User is signed in, see docs for a list of available properties
@@ -42,15 +44,17 @@ const LoginAndRegister = ({ navigation }) => {
     }, [])
   );
   const handleLogin = () => {
+    setShowSpinner(true);
     setLoginRegisterError(null);
-    login(email, pwd, setUser, setLoginRegisterError);
+    login(email, pwd, setUser, setLoginRegisterError, setShowSpinner);
   };
   const handleRegister = () => {
+    setShowSpinner(true);
     setLoginRegisterError(null);
     const validEmail = isValidEmail(email);
     const validPassword = isValidPassword(pwd);
     if (validEmail && validPassword) {
-      register(email, pwd, navigation, setLoginRegisterError);
+      register(email, pwd, navigation, setLoginRegisterError, setShowSpinner);
     } else {
       let error = "";
       !validEmail && (error = `El email no tiene un formato válido. `);
@@ -58,6 +62,7 @@ const LoginAndRegister = ({ navigation }) => {
         (error =
           error +
           `La contraseña debe contener al menos 8 caracteres, una letra minúscula, una mayúscula y un número.`);
+      setShowSpinner(false);
       setLoginRegisterError(error);
     }
   };
@@ -71,24 +76,31 @@ const LoginAndRegister = ({ navigation }) => {
           size={200}
           type="material-community"
         />
+        {showSpinner && (
+          <ActivityIndicator animating={showSpinner} size={120} color="grey" />
+        )}
         <KeyboardAvoidingView>
-          <TextInput
-            inputMode="email"
-            keyboardType="email-address"
-            style={styles.input}
-            placeholder="E-mail"
-            onChangeText={setEmail}
-            value={email}
-            selectionColor="#333"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            onChangeText={setPwd}
-            secureTextEntry={true}
-            value={pwd}
-            selectionColor="#333"
-          />
+          {!showSpinner && (
+            <View style={{ height: 120 }}>
+              <TextInput
+                inputMode="email"
+                keyboardType="email-address"
+                style={styles.input}
+                placeholder="E-mail"
+                onChangeText={setEmail}
+                value={email}
+                selectionColor="#333"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                onChangeText={setPwd}
+                secureTextEntry={true}
+                value={pwd}
+                selectionColor="#333"
+              />
+            </View>
+          )}
           <Text>{loginRegisterError}</Text>
           <TouchableOpacity style={styles.buttonDark} onPress={handleLogin}>
             <Text style={styles.text}>Ingresá</Text>

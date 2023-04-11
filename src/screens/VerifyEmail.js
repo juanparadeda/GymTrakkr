@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { SafeAreaView, Text, TouchableOpacity } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  View,
+} from "react-native";
 import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
 import { getAuth, signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
+
 const VerifyEmail = ({ navigation }) => {
   const [user, setUser] = useState(null);
-  //console.log(JSON.stringify(route.params, null, 2));
+  const [showSpinner, setShowSpinner] = useState(false);
   useFocusEffect(
     React.useCallback(() => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
@@ -25,6 +32,17 @@ const VerifyEmail = ({ navigation }) => {
     }, [])
   );
 
+  const handleSendEmail = () => {
+    setShowSpinner(true);
+    user &&
+      sendEmailVerification(user)
+        .then(() => setShowSpinner(false))
+        .catch((error) => {
+          console.log(error);
+          setShowSpinner(false);
+        });
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -34,13 +52,18 @@ const VerifyEmail = ({ navigation }) => {
         rowGap: 20,
       }}
     >
-      <Text style={{ fontSize: 20, width: "80%" }}>
-        Te enviamos un link para que verifiques tu email. Revisá tu bandeja de
-        entrada, y también la carpeta de SPAM
-      </Text>
+      {showSpinner && <ActivityIndicator size={100} color="grey" />}
+      {!showSpinner && (
+        <View style={{ width: "80%", height: 100 }}>
+          <Text style={{ fontSize: 20 }}>
+            Te enviamos un link para que verifiques tu email. Revisá tu bandeja
+            de entrada, y también la carpeta de SPAM
+          </Text>
+        </View>
+      )}
       <TouchableOpacity
         style={{ backgroundColor: "#333", borderRadius: 5, width: "55%" }}
-        onPress={() => user && sendEmailVerification(user)}
+        onPress={handleSendEmail}
       >
         <Text
           style={{
