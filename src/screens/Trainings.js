@@ -7,7 +7,7 @@ import { auth } from "../api/firestoreConfig";
 import { getDocumentFromFirestore } from "../api/firestoreController";
 import { capitalize, startCase } from "lodash";
 
-const Entrenamientos = () => {
+const Trainings = () => {
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
 
@@ -91,4 +91,4 @@ const Entrenamientos = () => {
   );
 };
 
-export default Entrenamientos;
+export default Trainings;

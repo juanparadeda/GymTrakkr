@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Entrenamientos from "../screens/Entrenamientos";
+import Trainings from "../screens/Trainings";
 import RoutinesNavigation from "./RoutinesNavigation";
 import Account from "../screens/Account";
 import { Icon } from "@rneui/themed";
@@ -26,7 +26,7 @@ const MainNavigation = () => {
       />
       <Tab.Screen
         name="Mis Entrenamientos"
-        component={Entrenamientos}
+        component={Trainings}
         options={{
           tabBarShowLabel: false,
           title: "Entrenamientos",
