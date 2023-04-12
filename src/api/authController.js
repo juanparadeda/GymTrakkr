@@ -10,6 +10,7 @@ import { auth } from "./firestoreConfig";
 import { db } from "./firestoreConfig";
 
 const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
+  setShowSpinner(true);
   signInWithEmailAndPassword(auth, email, pwd)
     //.then((userCredential) => {
     //  if (userCredential.user.emailVerified) {
@@ -25,7 +26,6 @@ const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
       setShowSpinner(false);
       setLoginRegisterError(`Usuario o Contraseña no válidos`);
     });
-  // setShowSpinner(false);
 };
 
 const register = async (

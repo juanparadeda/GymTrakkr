@@ -45,9 +45,8 @@ const LoginAndRegister = ({ navigation }) => {
     }, [])
   );
   const handleLogin = () => {
-    setShowSpinner(true);
     setLoginRegisterError(null);
-    login(email, pwd, setUser, setLoginRegisterError, setShowSpinner);
+    login(email, pwd, setLoginRegisterError, setShowSpinner);
   };
   const handleRegister = () => {
     setShowSpinner(true);
