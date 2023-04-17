@@ -1,7 +1,6 @@
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   sendPasswordResetEmail,
   signOut,
 } from "firebase/auth";
@@ -12,17 +11,8 @@ import { db } from "./firestoreConfig";
 const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
   setShowSpinner(true);
   signInWithEmailAndPassword(auth, email, pwd)
-    //.then((userCredential) => {
-    //  if (userCredential.user.emailVerified) {
-    //    setUser(userCredential.user);
-    //  } else {
-    //    userCredential.user && navigation.navigate("Email Verification");
-    //  }
-    //})
     .then(() => setShowSpinner(false))
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
       setShowSpinner(false);
       setLoginRegisterError(`Usuario o Contraseña no válidos`);
     });
@@ -51,12 +41,9 @@ const register = async (
         .catch((e) => {
           console.log(`Sign Out error: `, e);
         });
-      //setShowSpinner(false);
     })
 
     .catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-      //setShowSpinner(false);
       error.code === `auth/email-already-in-use` &&
         setLoginRegisterError(
           `Ya existe una cuenta con este email. Iniciá sesión o bien recuperá tu contraseña.`

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   SafeAreaView,
@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 
 const VerifyEmail = ({ navigation }) => {
@@ -18,14 +18,13 @@ const VerifyEmail = ({ navigation }) => {
     React.useCallback(() => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           setUser(userFirebase);
           sendEmailVerification(userFirebase).catch((error) =>
             console.log(`DESDE EL VERIFY EMAIL UFE: `, error)
           );
         } else {
-          //setUser(null);
+          setUser(null);
+          navigation.navigate("Login");
         }
       });
       return unsubscribe;

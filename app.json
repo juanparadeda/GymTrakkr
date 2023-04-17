@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "GymApp",
-    "slug": "GymApp",
+    "name": "Gym Trakkr",
+    "slug": "Gym Trakkr",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/weight-lifter.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/weight-lifter.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,7 +24,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/weight-lifter.png"
     }
   }
 }

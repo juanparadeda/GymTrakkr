@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 import {
@@ -24,12 +23,10 @@ const Account = ({ navigation }) => {
     React.useCallback(() => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           setUser(userFirebase);
-          // ...
         } else {
           setUser(null);
+          navigation.navigate("Login");
         }
       });
       return unsubscribe;

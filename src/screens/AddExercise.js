@@ -1,24 +1,21 @@
 import { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, ScrollView } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import {
   getCollectionFromFirebase,
   addExerciseToRoutine,
 } from "../api/firestoreController";
 import { getAuth } from "firebase/auth";
-import { SearchBar, ListItem, Button, Icon, Input } from "@rneui/themed";
+import { SearchBar, ListItem, Icon } from "@rneui/themed";
 import makeStringStd from "../functions/makeStringStd";
 import { startCase } from "lodash";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { BaseToast } from "react-native-toast-message";
 
-//const searchArray = (array, string = "") => {
-//  let searchResults = [];
-//  array.map((item) => {
-//    makeStringStd(item.name).match(makeStringStd(string)) &&
-//      searchResults.push(item);
-//  });
-//  return searchResults;
-//};
 const toastConfig = {
   success: (props) => {
     return (
@@ -38,6 +35,7 @@ const AddExercise = () => {
   const [exercises, setExercises] = useState([]);
   const [searchString, setSearchString] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   const searchArray = (array, string = "") => {
     let searchResults = [];
@@ -58,7 +56,11 @@ const AddExercise = () => {
     });
   };
   useEffect(() => {
-    getCollectionFromFirebase("exercises").then((data) => setExercises(data));
+    setShowSpinner(true);
+    getCollectionFromFirebase("exercises").then((data) => {
+      setShowSpinner(false);
+      setExercises(data);
+    });
   }, []);
   useEffect(() => {
     let res = searchArray(exercises, searchString);
@@ -74,26 +76,36 @@ const AddExercise = () => {
         />
         <ScrollView>
           <View style={{ paddingBottom: 100, flex: 1 }}>
-            {searchResults.map((exercise) => {
-              return (
-                <ListItem key={exercise.id}>
-                  <Icon
-                    name="weight-lifter"
-                    type="material-community"
-                    color="grey"
-                  />
-                  <ListItem.Content>
-                    <ListItem.Title>{startCase(exercise.name)}</ListItem.Title>
-                  </ListItem.Content>
-                  <Icon
-                    name="playlist-add"
-                    type="material"
-                    color="grey"
-                    onPress={() => handleAddExercise(exercise)}
-                  />
-                </ListItem>
-              );
-            })}
+            {showSpinner && (
+              <ActivityIndicator
+                size={100}
+                color="grey"
+                style={{ marginTop: 100 }}
+              />
+            )}
+            {!showSpinner &&
+              searchResults.map((exercise) => {
+                return (
+                  <ListItem key={exercise.id}>
+                    <Icon
+                      name="weight-lifter"
+                      type="material-community"
+                      color="grey"
+                    />
+                    <ListItem.Content>
+                      <ListItem.Title>
+                        {startCase(exercise.name)}
+                      </ListItem.Title>
+                    </ListItem.Content>
+                    <Icon
+                      name="playlist-add"
+                      type="material"
+                      color="grey"
+                      onPress={() => handleAddExercise(exercise)}
+                    />
+                  </ListItem>
+                );
+              })}
           </View>
         </ScrollView>
       </SafeAreaView>

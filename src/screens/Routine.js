@@ -1,49 +1,60 @@
 import React from "react";
-import { Button } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import { auth, db } from "../api/firestoreConfig";
-import {
-  getDocumentFromFirestore,
-  removeExerciseFromRoutine,
-} from "../api/firestoreController";
+import { removeExerciseFromRoutine } from "../api/firestoreController";
 import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Text, FAB, ListItem, Icon, Divider } from "@rneui/themed";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  BackHandler,
+} from "react-native";
+import { Text, FAB, ListItem, Icon } from "@rneui/themed";
 import { onSnapshot, doc } from "firebase/firestore";
 import { startCase } from "lodash";
 
 const Routine = ({ navigation }) => {
   const [routine, setRoutine] = useState([]);
   const [user, setUser] = useState(null);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
+      setShowSpinner(true);
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           setUser(userFirebase);
-          // ...
+          onSnapshot(doc(db, "users", userFirebase.uid), (doc) => {
+            const response = doc.data();
+            const routineRT = response.routine;
+            setShowSpinner(false);
+            setRoutine(routineRT);
+          });
         } else {
           setUser(null);
+          navigation.navigate("Login");
         }
       });
-      user &&
-        onSnapshot(doc(db, "users", user.uid), (doc) => {
-          const response = doc.data();
-          const routineRT = response.routine;
-          setRoutine(routineRT);
-        });
-      //getDocumentFromFirestore("users", user?.uid)
-      //  .then((res) => {
-      //    setRoutine(res.routine);
-      //  })
-      //  .catch((e) => console.log(`Error de promise de Routine.js`, e));
       return unsubscribe;
     }, [user])
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp();
+      };
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => subscription.remove();
+    }, [])
+  );
+
   const handleDelete = (exercise) => {
     removeExerciseFromRoutine(user.uid, exercise);
   };
@@ -51,50 +62,58 @@ const Routine = ({ navigation }) => {
     <>
       <ScrollView>
         <View style={{ paddingBottom: 100, flex: 1 }}>
-          {routine.length > 0 &&
-            routine.map((exercise) => {
-              return (
-                <ListItem key={exercise.id}>
-                  <Icon
-                    name="weight-lifter"
-                    type="material-community"
-                    color="grey"
-                    onPress={() =>
-                      navigation.navigate("Ejercicio", { exercise })
-                    }
-                  />
-                  <ListItem.Content>
-                    <ListItem.Title
+          {showSpinner && (
+            <ActivityIndicator
+              size={100}
+              color="grey"
+              style={{ marginTop: 100 }}
+            />
+          )}
+          {!showSpinner &&
+            (routine.length > 0 ? (
+              routine.map((exercise) => {
+                return (
+                  <ListItem key={exercise.id}>
+                    <Icon
+                      name="weight-lifter"
+                      type="material-community"
+                      color="grey"
                       onPress={() =>
                         navigation.navigate("Ejercicio", { exercise })
                       }
-                    >
-                      {startCase(exercise.name)}
-                    </ListItem.Title>
-                  </ListItem.Content>
-                  <Icon
-                    name="trash-can-outline"
-                    type="material-community"
-                    color="grey"
-                    onPress={() => handleDelete(exercise)}
-                  />
-                </ListItem>
-              );
-            })}
-          {routine.length === 0 && (
-            <Text
-              style={{
-                alignSelf: "center",
-                marginTop: 40,
-                fontSize: 30,
-                width: "80%",
-                textAlign: "center",
-              }}
-            >
-              Tu rutina está vacía. Agregá ejercicios presionando el botón "+"
-              de abajo
-            </Text>
-          )}
+                    />
+                    <ListItem.Content>
+                      <ListItem.Title
+                        onPress={() =>
+                          navigation.navigate("Ejercicio", { exercise })
+                        }
+                      >
+                        {startCase(exercise.name)}
+                      </ListItem.Title>
+                    </ListItem.Content>
+                    <Icon
+                      name="trash-can-outline"
+                      type="material-community"
+                      color="grey"
+                      onPress={() => handleDelete(exercise)}
+                    />
+                  </ListItem>
+                );
+              })
+            ) : (
+              <Text
+                style={{
+                  alignSelf: "center",
+                  marginTop: 40,
+                  fontSize: 30,
+                  width: "80%",
+                  textAlign: "center",
+                }}
+              >
+                Tu rutina está vacía. Agregá ejercicios presionando el botón "+"
+                de abajo
+              </Text>
+            ))}
         </View>
       </ScrollView>
       <FAB

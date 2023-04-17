@@ -60,11 +60,10 @@ const ChangePassword = ({ navigation }) => {
     React.useCallback(() => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           setUser(userFirebase);
         } else {
-          //setUser(null);
+          setUser(null);
+          navigation.navigate("Login");
         }
       });
       return unsubscribe;

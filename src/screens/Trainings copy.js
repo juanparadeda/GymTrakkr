@@ -1,14 +1,12 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
-import { onSnapshot, doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../api/firestoreConfig";
-import { removeTrainingFromTrainings } from "../api/firestoreController";
+import { auth } from "../api/firestoreConfig";
+import { getDocumentFromFirestore } from "../api/firestoreController";
 import { startCase } from "lodash";
-import { ListItem, Icon } from "@rneui/themed";
 
-const Trainings = ({ navigation }) => {
+const Trainings = () => {
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
   const [showSpinner, setShowSpinner] = useState(false);
@@ -18,18 +16,23 @@ const Trainings = ({ navigation }) => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         setShowSpinner(true);
         if (userFirebase) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+
           setUser(userFirebase);
-          onSnapshot(doc(db, "users", userFirebase.uid), (doc) => {
-            const response = doc.data();
-            const historySorted = response.trainings?.sort((a, b) => {
-              return a.rawDate > b.rawDate ? -1 : 1;
-            });
-            setShowSpinner(false);
-            historySorted && setHistory(historySorted);
-          });
+          getDocumentFromFirestore("users", userFirebase.uid)
+            .then((res) => {
+              setShowSpinner(false);
+              const trainings = res.trainings.sort((a, b) => {
+                return a.rawDate > b.rawDate ? -1 : 1;
+              });
+
+              setHistory(trainings);
+            })
+            .catch((e) => console.log(e));
+          // ...
         } else {
           setUser(null);
-          navigation.navigate("Login");
         }
       });
       return unsubscribe;
@@ -45,8 +48,7 @@ const Trainings = ({ navigation }) => {
       <View
         style={{
           flex: 1,
-          width: "100%",
-          alignItems: "center",
+          width: "80%",
           alignSelf: "center",
           paddingBottom: 30,
         }}
@@ -64,16 +66,15 @@ const Trainings = ({ navigation }) => {
             Rutina, entrá a un ejercicio y agregá las series de tu entrenamiento
           </Text>
         )}
-        {history?.map((item, i) => {
+        {history.map((item, i) => {
           return (
             <View
               key={item.rawDate}
               style={{
                 rowGap: 5,
+                alignItems: "flex-start",
                 justifyContent: "flex-start",
                 marginHorizontal: "auto",
-                width: "100%",
-                alignItems: "center",
               }}
             >
               {item.todayDate != history[i - 1]?.todayDate && (
@@ -82,6 +83,7 @@ const Trainings = ({ navigation }) => {
                     fontWeight: "bold",
                     fontSize: 20,
                     marginTop: 10,
+                    alignSelf: "center",
                   }}
                 >
                   {item.todayDate}
@@ -89,41 +91,15 @@ const Trainings = ({ navigation }) => {
               )}
               {item.exerciseName != history[i - 1]?.exerciseName && (
                 <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    marginVertical: 7,
-                  }}
+                  style={{ fontWeight: "bold", fontSize: 18, marginTop: 7 }}
                 >
                   {startCase(item.exerciseName)}
                 </Text>
               )}
 
-              <ListItem style={{ alignItems: "center" }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    width: "80%",
-                  }}
-                >
-                  <Icon
-                    name="weight-lifter"
-                    type="material-community"
-                    color="grey"
-                  />
-                  <View style={{ flexDirection: "row", columnGap: 10 }}>
-                    <Text>{item.weight} KG.</Text>
-                    <Text>{item.reps} reps.</Text>
-                  </View>
-                  <Icon
-                    name="trash-can-outline"
-                    type="material-community"
-                    color="grey"
-                    onPress={() => removeTrainingFromTrainings(user.uid, item)}
-                  />
-                </View>
-              </ListItem>
+              <Text style={{ fontSize: 16 }}>
+                {item.weight} KG, {item.reps} reps
+              </Text>
             </View>
           );
         })}

@@ -1,37 +1,49 @@
-import React from "react";
-import { Text, Icon, Card } from "@rneui/base";
+import React, { useState } from "react";
+import { Text, Icon } from "@rneui/base";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet, View } from "react-native";
-import { useState } from "react";
-import { Button, Divider } from "@rneui/themed";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { Button } from "@rneui/themed";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../api/firestoreConfig";
+import { auth, db } from "../api/firestoreConfig";
 import { addSetToTraining } from "../api/firestoreController";
 import { useFocusEffect } from "@react-navigation/native";
-import { getDocumentFromFirestore } from "../api/firestoreController";
-import { ScrollView } from "react-native";
-import { collection, doc, onSnapshot } from "firebase/firestore";
-import { db } from "../api/firestoreConfig";
+import { doc, onSnapshot } from "firebase/firestore";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { BaseToast } from "react-native-toast-message";
+import { startCase } from "lodash";
 
-const Exercise = ({ route }) => {
+const toastConfig = {
+  success: (props) => {
+    return (
+      <BaseToast
+        {...props}
+        style={{ borderLeftColor: `grey`, height: 80 }}
+        contentContainerStyle={{ padding: 15 }}
+        text1Style={{
+          fontSize: 20,
+        }}
+        text2Style={{ fontSize: 16 }}
+      />
+    );
+  },
+};
+
+const Exercise = ({ route }, { navigation }) => {
   const { name, id } = route.params.exercise;
-  // console.log(JSON.stringify(route.params, null, 2));
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
-  const [currentSets, setCurrentSets] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           setUser(userFirebase);
           // ...
         } else {
           setUser(null);
+          navigation.navigate("Login");
         }
       });
       user &&
@@ -59,6 +71,16 @@ const Exercise = ({ route }) => {
     weight >= 5 ? (newWeight = weight - 5) : (newWeight = 0);
     setWeight(newWeight);
   };
+  const handleSmallPlusWeight = () => {
+    const newWeight = weight + 1;
+    setWeight(newWeight);
+  };
+
+  const handleSmallMinusWeight = () => {
+    let newWeight;
+    weight >= 1 ? (newWeight = weight - 1) : (newWeight = 0);
+    setWeight(newWeight);
+  };
 
   const handlePlusReps = () => {
     const newReps = reps + 1;
@@ -81,113 +103,128 @@ const Exercise = ({ route }) => {
       rawDate: date,
       uid: user.uid,
     };
-    //console.log(date.toLocaleDateString("es-AR", { dateStyle: "full" }));
     addSetToTraining(set);
-    setCurrentSets([...currentSets, set]);
-
-    //console.log(sets);
+    Toast.show({
+      type: "success",
+      text1: `${startCase(name)}`,
+      text2: "¡Agregaste la serie a tu historial!",
+    });
   };
 
   return (
-    <ScrollView>
-      <SafeAreaView style={{ rowGap: 20, flex: 1, alignItems: "center" }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Icon
-            type="material-community"
-            name="minus-circle"
-            size={60}
-            onPress={handleBigMinusWeight}
-          />
-          <View style={styles.weightAndrepsDisplay}>
-            <Text style={styles.weight}>{weight}</Text>
-            <Text>KG</Text>
+    <>
+      <ScrollView>
+        <SafeAreaView style={{ rowGap: 20, flex: 1, alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Icon
+              type="material-community"
+              name="minus-circle"
+              size={40}
+              onPress={handleSmallMinusWeight}
+            />
+            <Icon
+              type="material-community"
+              name="minus-circle"
+              size={60}
+              onPress={handleBigMinusWeight}
+            />
+            <View style={styles.weightAndrepsDisplay}>
+              <Text style={styles.weight}>{weight}</Text>
+              <Text>KG</Text>
+            </View>
+            <Icon
+              type="material-community"
+              name="plus-circle"
+              size={60}
+              onPress={handleBigPlusWeight}
+            />
+            <Icon
+              type="material-community"
+              name="plus-circle"
+              size={40}
+              onPress={handleSmallPlusWeight}
+            />
           </View>
-          <Icon
-            type="material-community"
-            name="plus-circle"
-            size={60}
-            onPress={handleBigPlusWeight}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Icon
-            type="material-community"
-            name="minus-circle"
-            size={60}
-            onPress={handleMinusReps}
-          />
-          <View style={styles.weightAndrepsDisplay}>
-            <Text style={styles.weight}>{reps}</Text>
-            <Text>Reps</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Icon
+              type="material-community"
+              name="minus-circle"
+              size={60}
+              onPress={handleMinusReps}
+            />
+            <View style={styles.weightAndrepsDisplay}>
+              <Text style={styles.weight}>{reps}</Text>
+              <Text>Reps</Text>
+            </View>
+            <Icon
+              type="material-community"
+              name="plus-circle"
+              size={60}
+              onPress={handlePlusReps}
+            />
           </View>
-          <Icon
-            type="material-community"
-            name="plus-circle"
-            size={60}
-            onPress={handlePlusReps}
-          />
-        </View>
-        <View style={{ width: "60%" }}>
-          <Button
-            title="GUARDAR SERIE"
-            disabled={reps === 0}
-            onPress={handleSaveSet}
-            color="black"
-            buttonStyle={{ borderRadius: 60 }}
-          />
-        </View>
-        <Text style={{ fontWeight: "bold", fontSize: 20 }}>HISTORIAL</Text>
-        {/*console.log(JSON.stringify(history, null, 2))*/}
-        {history?.map(
-          (item, i) =>
-            i <= 51 && (
-              <View
-                key={item.rawDate}
-                style={{ rowGap: 20, alignItems: "center" }}
-              >
-                {item.todayDate != history[i - 1]?.todayDate && (
-                  <>
-                    <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-                      {item.todayDate}
-                    </Text>
-                  </>
-                )}
+          <View style={{ width: "60%" }}>
+            <Button
+              title="GUARDAR SERIE"
+              disabled={reps === 0}
+              onPress={handleSaveSet}
+              color="black"
+              buttonStyle={{ borderRadius: 10 }}
+            />
+          </View>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>HISTORIAL</Text>
+          {history?.map(
+            (item, i) =>
+              i <= 51 && (
+                <View
+                  key={item.rawDate}
+                  style={{ rowGap: 20, alignItems: "center" }}
+                >
+                  {item.todayDate != history[i - 1]?.todayDate && (
+                    <>
+                      <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+                        {item.todayDate}
+                      </Text>
+                    </>
+                  )}
 
-                <Text>
-                  {item.weight} KG, {item.reps} reps
-                </Text>
-              </View>
-            )
-        )}
-      </SafeAreaView>
-    </ScrollView>
+                  <Text>
+                    {item.weight} KG, {item.reps} reps
+                  </Text>
+                </View>
+              )
+          )}
+        </SafeAreaView>
+      </ScrollView>
+      <Toast config={toastConfig} position="bottom" visibilityTime={1000} />
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   weightAndrepsDisplay: {
     borderColor: "black",
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
     borderWidth: 5,
     justifyContent: "center",
     alignItems: "center",
   },
   weight: {
-    fontSize: 80,
+    fontSize: 60,
   },
 });
 

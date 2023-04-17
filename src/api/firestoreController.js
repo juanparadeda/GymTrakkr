@@ -6,7 +6,6 @@ import {
   arrayUnion,
   doc,
   getDoc,
-  onSnapshot,
   arrayRemove,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -47,19 +46,10 @@ const addExerciseToRoutine = async (exercise, uid) => {
 };
 
 const addSetToTraining = async (set) => {
-  //const set = {
-  //  rawDate: date,
-  //  todayDate: date.toLocaleDateString("es-AR", { dateStyle: "full" }),
-  //  exerciseName: exercise,
-  //  exerciseId: id,
-  //  weight: weight,
-  //  reps: reps,
-  //};
   const humanDate = new Date(set.rawDate);
   const todayDate = humanDate.toLocaleDateString("es-AR", {
     dateStyle: "full",
   });
-  // console.log(JSON.stringify(set, null, 2));
   const docRef = doc(db, "users", set.uid);
   await updateDoc(docRef, { trainings: arrayUnion({ ...set, todayDate }) });
 };
@@ -73,6 +63,15 @@ const removeExerciseFromRoutine = async (uid, exercise) => {
   }
 };
 
+const removeTrainingFromTrainings = async (uid, training) => {
+  const docRef = doc(db, "users", uid);
+  try {
+    await updateDoc(docRef, { trainings: arrayRemove(training) });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   removeExerciseFromRoutine,
   getCollectionFromFirebase,
@@ -80,4 +79,5 @@ export {
   getCurrentUserFromFirestore,
   getDocumentFromFirestore,
   addSetToTraining,
+  removeTrainingFromTrainings,
 };

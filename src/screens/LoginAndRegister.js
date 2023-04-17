@@ -21,8 +21,6 @@ import { auth } from "../api/firestoreConfig";
 const LoginAndRegister = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
-  const [user, setUser] = useState(null);
-  const [userEmail, setUserEmail] = useState(false);
   const [loginRegisterError, setLoginRegisterError] = useState(null);
   const [showSpinner, setShowSpinner] = useState(false);
   useFocusEffect(
@@ -32,13 +30,9 @@ const LoginAndRegister = ({ navigation }) => {
       setShowSpinner(false);
       const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
         if (userFirebase) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           userFirebase.emailVerified && navigation.navigate("Main Navigation");
           !userFirebase.emailVerified &&
             navigation.navigate("Email Verification");
-        } else {
-          //setUser(null);
         }
       });
       return unsubscribe;
@@ -68,53 +62,62 @@ const LoginAndRegister = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.inputBox}>
-        <Icon
-          name="weight-lifter"
-          color="#333"
-          size={200}
-          type="material-community"
-        />
-        {showSpinner && (
-          <ActivityIndicator animating={showSpinner} size={120} color="grey" />
-        )}
-        <KeyboardAvoidingView>
-          {!showSpinner && (
-            <View style={{ height: 120 }}>
-              <TextInput
-                inputMode="email"
-                keyboardType="email-address"
-                style={styles.input}
-                placeholder="E-mail"
-                onChangeText={setEmail}
-                value={email}
-                selectionColor="#333"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Contraseña"
-                onChangeText={setPwd}
-                secureTextEntry={true}
-                value={pwd}
-                selectionColor="#333"
-              />
-            </View>
+    <>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.inputBox}>
+          <Icon
+            name="weight-lifter"
+            color="#333"
+            size={200}
+            type="material-community"
+          />
+          {showSpinner && (
+            <ActivityIndicator
+              animating={showSpinner}
+              size={120}
+              color="grey"
+            />
           )}
-          <Text>{loginRegisterError}</Text>
-          <TouchableOpacity style={styles.buttonDark} onPress={handleLogin}>
-            <Text style={styles.text}>Ingresá</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonLight} onPress={handleRegister}>
-            <Text style={styles.text}>Registrate</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Password Recovery")}
-          >
-            <Text>¿Te olvidaste la contraseña?</Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </View>
+          <KeyboardAvoidingView behavior="padding">
+            {!showSpinner && (
+              <View style={{ height: 120 }}>
+                <TextInput
+                  inputMode="email"
+                  keyboardType="email-address"
+                  style={styles.input}
+                  placeholder="E-mail"
+                  onChangeText={setEmail}
+                  value={email}
+                  selectionColor="#333"
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Contraseña"
+                  onChangeText={setPwd}
+                  secureTextEntry={true}
+                  value={pwd}
+                  selectionColor="#333"
+                />
+              </View>
+            )}
+            <Text>{loginRegisterError}</Text>
+            <TouchableOpacity style={styles.buttonDark} onPress={handleLogin}>
+              <Text style={styles.text}>Ingresá</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonLight}
+              onPress={handleRegister}
+            >
+              <Text style={styles.text}>Registrate</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Password Recovery")}
+            >
+              <Text>¿Te olvidaste la contraseña?</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </View>
+      </SafeAreaView>
       <TouchableOpacity
         onPress={() =>
           Linking.openURL(
@@ -126,7 +129,7 @@ const LoginAndRegister = ({ navigation }) => {
 
         <Text style={{ textAlign: "center" }}>Feedback por acá</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </>
   );
 };
 

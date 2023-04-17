@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Trainings from "../screens/Trainings";
 import RoutinesNavigation from "./RoutinesNavigation";
-import Account from "../screens/Account";
 import { Icon } from "@rneui/themed";
 import AccountNavigation from "./AccountNavigation";
 
@@ -22,6 +21,7 @@ const MainNavigation = () => {
               <Icon name="weight" type="material-community" color={color} />
             );
           },
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -46,6 +46,7 @@ const MainNavigation = () => {
         name="Cuenta"
         component={AccountNavigation}
         options={{
+          unmountOnBlur: true,
           tabBarShowLabel: false,
           title: "Mi Cuenta",
           tabBarIcon: ({ focused }) => {
