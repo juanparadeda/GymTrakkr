@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Gym Trakkr",
-    "slug": "Gym Trakkr",
+    "slug": "Gym_Trakkr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/weight-lifter.png",
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sheipeg.Gym_Trakkr"
     },
     "web": {
       "favicon": "./assets/weight-lifter.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3d6137b3-a469-4702-ac15-1f9952cb426d"
+      }
     }
   }
 }
