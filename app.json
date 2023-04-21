@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/weight-lifter.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.sheipeg.Gym_Trakkr"
