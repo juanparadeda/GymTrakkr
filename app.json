@@ -2,7 +2,7 @@
   "expo": {
     "name": "Gym Trakkr",
     "slug": "Gym_Trakkr",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/weight-lifter.png",
     "userInterfaceStyle": "light",
@@ -31,6 +31,12 @@
       "eas": {
         "projectId": "3d6137b3-a469-4702-ac15-1f9952cb426d"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3d6137b3-a469-4702-ac15-1f9952cb426d"
     }
   }
 }
