@@ -22,7 +22,8 @@
         "foregroundImage": "./assets/weight-lifter.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sheipeg.Gym_Trakkr"
+      "package": "com.sheipeg.Gym_Trakkr",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/weight-lifter.png"
