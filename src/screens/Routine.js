@@ -1,7 +1,7 @@
 import React from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
-import { auth, db } from "../api/firestoreConfig";
+import { db, auth } from "../api/firestoreConfig";
 import { removeExerciseFromRoutine } from "../api/firestoreController";
 import { useState } from "react";
 import {

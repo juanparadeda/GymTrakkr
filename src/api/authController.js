@@ -3,13 +3,14 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  getAuth,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
-import { auth } from "./firestoreConfig";
 import { db } from "./firestoreConfig";
 
 const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
   setShowSpinner(true);
+  const auth = getAuth();
   signInWithEmailAndPassword(auth, email, pwd)
     .then(() => setShowSpinner(false))
     .catch((error) => {

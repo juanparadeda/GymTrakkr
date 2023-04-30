@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://support.google.com/firebase/answer/7015592
@@ -20,6 +22,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
-
+const pers = getReactNativePersistence(AsyncStorage);
+const auth = initializeAuth(app, {
+  persistence: pers,
+  // No popupRedirectResolver defined
+});
+//setPersistence(auth, pers);
 export { auth, db };
