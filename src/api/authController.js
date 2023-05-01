@@ -6,7 +6,7 @@ import {
   getAuth,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
-import { db } from "./firestoreConfig";
+import { db, auth } from "./firestoreConfig";
 
 const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
   setShowSpinner(true);
@@ -20,13 +20,13 @@ const login = (email, pwd, setLoginRegisterError, setShowSpinner) => {
 };
 
 const register = async (
-  emailInput,
+  email,
   pwd,
   navigation,
   setLoginRegisterError,
   setShowSpinner
 ) => {
-  await createUserWithEmailAndPassword(auth, emailInput, pwd)
+  await createUserWithEmailAndPassword(auth, email, pwd)
     .then(async (res) => {
       const {
         user: { uid, email },
@@ -35,13 +35,13 @@ const register = async (
         email: email,
         routine: [],
       });
-      signOut(auth)
-        .then(() => {
-          navigation.navigate("Email Verification");
-        })
-        .catch((e) => {
-          console.log(`Sign Out error: `, e);
-        });
+      //signOut(auth)
+      //  .then(() => {
+      navigation.navigate("Email Verification");
+      //  })
+      //  .catch((e) => {
+      //    console.log(`Sign Out error: `, e);
+      //  });
     })
 
     .catch((error) => {
