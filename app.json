@@ -2,7 +2,7 @@
   "expo": {
     "name": "Gym Trakkr",
     "slug": "Gym_Trakkr",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "orientation": "portrait",
     "icon": "./assets/weight-lifter.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.sheipeg.Gym_Trakkr",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/weight-lifter.png"

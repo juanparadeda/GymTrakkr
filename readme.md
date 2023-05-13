@@ -9,4 +9,8 @@ All backend is Google Firebase managed
 - Authentication: Firebase Auth
 - Database: Firebase Firestore
 
+Application is available for download in Google Play Store:
+
+[Download from Google Play](https://play.google.com/store/apps/details?id=com.sheipeg.Gym_Trakkr)
+
 ![Application GIF](./GymApp.gif "GIF Showing the APP in Android Emulator")
