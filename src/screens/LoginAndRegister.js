@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import React, { useState, useContext } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
@@ -17,28 +17,24 @@ import { Icon } from "@rneui/themed";
 import { isValidEmail } from "../functions/isValidEmail";
 import { isValidPassword } from "../functions/isValidPassword";
 import { auth } from "../api/firestoreConfig";
+import { AuthContext } from "../context/AuthContext";
 
 const LoginAndRegister = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [loginRegisterError, setLoginRegisterError] = useState(null);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
 
   useFocusEffect(
     React.useCallback(() => {
       setEmail("");
       setPwd("");
       setShowSpinner(false);
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        if (userFirebase) {
-          setUser(userFirebase);
-          userFirebase.emailVerified && navigation.navigate("Main Navigation");
-          !userFirebase.emailVerified &&
-            navigation.navigate("Email Verification");
-        }
-      });
-      return unsubscribe;
+      if (user) {
+        user.emailVerified && navigation.navigate("Main Navigation");
+        !user.emailVerified && navigation.navigate("Email Verification");
+      }
     }, [user])
   );
   const handleLogin = () => {

@@ -8,42 +8,14 @@ import MainNavigation from "./src/navigation/MainNavigation";
 import { useState } from "react";
 import VerifyEmail from "./src/screens/VerifyEmail";
 import PasswordRecovery from "./src/screens/PasswordRecovery";
-const Stack = createNativeStackNavigator();
+import Home from "./src/components/Home";
+import { AuthContextProvider } from "./src/context/AuthContext";
+
 export default function App() {
-  //const defaultRoute = user?.emailVerified ? "Main Navigation" : "Login";
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={`Login`}>
-        <Stack.Screen
-          name="Login"
-          component={LoginAndRegister}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Main Navigation"
-          component={MainNavigation}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Email Verification"
-          component={VerifyEmail}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Password Recovery"
-          component={PasswordRecovery}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContextProvider>
+      <Home />
+    </AuthContextProvider>
   );
 }
 

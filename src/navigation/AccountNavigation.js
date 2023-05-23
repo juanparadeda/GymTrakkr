@@ -11,12 +11,12 @@ const AccountNavigation = () => {
       <Stack.Screen
         name="Account"
         component={Account}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, unmountOnBlur: true }}
       />
       <Stack.Screen
         name="Change Password"
         component={ChangePassword}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, unmountOnBlur: true }}
       />
     </Stack.Navigator>
   );

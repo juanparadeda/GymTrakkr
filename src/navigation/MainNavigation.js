@@ -28,6 +28,7 @@ const MainNavigation = () => {
         name="Mis Entrenamientos"
         component={Trainings}
         options={{
+          unmountOnBlur: true,
           tabBarShowLabel: false,
           title: "Entrenamientos",
           tabBarIcon: ({ focused }) => {

@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Text, Icon } from "@rneui/base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, View, ScrollView } from "react-native";
 import { Button } from "@rneui/themed";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../api/firestoreConfig";
+import { db } from "../api/firestoreConfig";
 import { addSetToTraining } from "../api/firestoreController";
 import { useFocusEffect } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { BaseToast } from "react-native-toast-message";
 import { startCase } from "lodash";
+import { AuthContext } from "../context/AuthContext";
 
 const toastConfig = {
   success: (props) => {
@@ -29,23 +29,15 @@ const toastConfig = {
 };
 
 const Exercise = ({ route }, { navigation }) => {
+  const { user } = useContext(AuthContext);
   const { name, id } = route.params.exercise;
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
-  const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        if (userFirebase) {
-          setUser(userFirebase);
-          // ...
-        } else {
-          setUser(null);
-          navigation.navigate("Login");
-        }
-      });
+      !user && navigation.navigate("Login");
       user &&
         onSnapshot(doc(db, "users", user.uid), (doc) => {
           const response = doc.data();
@@ -57,7 +49,6 @@ const Exercise = ({ route }, { navigation }) => {
           });
           setHistory(sortedExerciseHistory);
         });
-      return unsubscribe;
     }, [user])
   );
 

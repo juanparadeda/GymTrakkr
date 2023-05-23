@@ -1,8 +1,6 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
-  onAuthStateChanged,
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
@@ -14,14 +12,14 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Text,
-  TouchableOpacity,
   StyleSheet,
 } from "react-native";
 import { Button, Dialog } from "@rneui/themed";
 import { isValidPassword } from "../functions/isValidPassword";
+import { AuthContext } from "../context/AuthContext";
 
 const ChangePassword = ({ navigation }) => {
-  const [user, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
   const [currentPwd, setCurrentPwd] = useState(``);
   const [newPwd1, setNewPwd1] = useState(``);
   const [newPwd2, setNewPwd2] = useState(``);
@@ -58,15 +56,7 @@ const ChangePassword = ({ navigation }) => {
   }, [newPwd1, newPwd2]);
   useFocusEffect(
     React.useCallback(() => {
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        if (userFirebase) {
-          setUser(userFirebase);
-        } else {
-          setUser(null);
-          navigation.navigate("Login");
-        }
-      });
-      return unsubscribe;
+      !user && navigation.navigate("Login");
     }, [])
   );
 
@@ -121,7 +111,11 @@ const ChangePassword = ({ navigation }) => {
           ingresar con tu email y nueva contraseña
         </Text>
         <Dialog.Actions>
-          <Dialog.Button title="OK" onPress={handleDialogEvent} />
+          <Dialog.Button
+            title="OK"
+            onPress={handleDialogEvent}
+            titleStyle={{ color: "#888" }}
+          />
         </Dialog.Actions>
       </Dialog>
     </>

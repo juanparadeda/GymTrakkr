@@ -10,24 +10,34 @@ import {
 import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const VerifyEmail = ({ navigation }) => {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
   const [showSpinner, setShowSpinner] = useState(false);
   useFocusEffect(
     React.useCallback(() => {
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        if (userFirebase) {
-          setUser(userFirebase);
-          sendEmailVerification(userFirebase).catch((error) =>
-            console.log(`DESDE EL VERIFY EMAIL UFE: `, error)
-          );
-        } else {
-          setUser(null);
-          navigation.navigate("Login");
-        }
-      });
-      return unsubscribe;
+      if (user) {
+        sendEmailVerification(user).catch((error) =>
+          console.log(`DESDE EL VERIFY EMAIL UFE: `, error)
+        );
+      } else {
+        navigation.navigate("Login");
+      }
+      //const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
+      //  if (userFirebase) {
+      //    setUser(userFirebase);
+      //    sendEmailVerification(userFirebase).catch((error) =>
+      //      console.log(`DESDE EL VERIFY EMAIL UFE: `, error)
+      //    );
+      //  } else {
+      //    setUser(null);
+      //    navigation.navigate("Login");
+      //  }
+      //});
+      //return unsubscribe;
     }, [])
   );
 

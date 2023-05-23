@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   View,
   SafeAreaView,
@@ -9,12 +9,12 @@ import {
   getCollectionFromFirebase,
   addExerciseToRoutine,
 } from "../api/firestoreController";
-import { getAuth } from "firebase/auth";
 import { SearchBar, ListItem, Icon } from "@rneui/themed";
 import makeStringStd from "../functions/makeStringStd";
 import { startCase } from "lodash";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { BaseToast } from "react-native-toast-message";
+import { AuthContext } from "../context/AuthContext";
 
 const toastConfig = {
   success: (props) => {
@@ -36,6 +36,7 @@ const AddExercise = () => {
   const [searchString, setSearchString] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSpinner, setShowSpinner] = useState(false);
+  const { user } = useContext(AuthContext);
 
   const searchArray = (array, string = "") => {
     let searchResults = [];
@@ -46,9 +47,7 @@ const AddExercise = () => {
     return searchResults;
   };
   const handleAddExercise = (exercise) => {
-    const auth = getAuth();
-    const user = auth.currentUser.uid;
-    addExerciseToRoutine(exercise, user);
+    addExerciseToRoutine(exercise, user.uid);
     Toast.show({
       type: "success",
       text1: `${startCase(exercise.name)}`,
@@ -109,7 +108,7 @@ const AddExercise = () => {
           </View>
         </ScrollView>
       </SafeAreaView>
-      <Toast config={toastConfig} position="bottom" visibilityTime={1000} />
+      <Toast config={toastConfig} position="bottom" visibilityTime={1500} />
     </>
   );
 };

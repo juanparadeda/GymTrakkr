@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../api/firestoreConfig";
 import {
   View,
@@ -10,26 +10,17 @@ import {
   Linking,
 } from "react-native";
 import { Dialog } from "@rneui/themed";
+import { AuthContext } from "../context/AuthContext";
 
 const Account = ({ navigation }) => {
-  const [user, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
   const [logOutDialogVisible, setlogOutDialogVisible] = useState(false);
   const handleSignOut = () => {
     signOut(auth);
-    navigation.navigate("Login");
   };
-
   useFocusEffect(
     React.useCallback(() => {
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        if (userFirebase) {
-          setUser(userFirebase);
-        } else {
-          setUser(null);
-          navigation.navigate("Login");
-        }
-      });
-      return unsubscribe;
+      !user && navigation.replace("Login");
     }, [user])
   );
   return (
@@ -69,8 +60,13 @@ const Account = ({ navigation }) => {
           volver a ingresar con tu email y contraseña
         </Text>
         <Dialog.Actions>
-          <Dialog.Button title="Cerrar Sesión" onPress={handleSignOut} />
           <Dialog.Button
+            title="Cerrar Sesión"
+            titleStyle={{ color: "#888" }}
+            onPress={handleSignOut}
+          />
+          <Dialog.Button
+            titleStyle={{ color: "black" }}
             title="Seguir Entrenando"
             onPress={() => setlogOutDialogVisible(!logOutDialogVisible)}
           />

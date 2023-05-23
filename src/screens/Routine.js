@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import { db, auth } from "../api/firestoreConfig";
 import { removeExerciseFromRoutine } from "../api/firestoreController";
-import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -14,30 +13,25 @@ import {
 import { Text, FAB, ListItem, Icon } from "@rneui/themed";
 import { onSnapshot, doc } from "firebase/firestore";
 import { startCase } from "lodash";
+import { AuthContext } from "../context/AuthContext";
 
 const Routine = ({ navigation }) => {
   const [routine, setRoutine] = useState([]);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
   const [showSpinner, setShowSpinner] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       setShowSpinner(true);
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        if (userFirebase) {
-          setUser(userFirebase);
-          onSnapshot(doc(db, "users", userFirebase.uid), (doc) => {
-            const response = doc.data();
-            const routineRT = response.routine;
-            setShowSpinner(false);
-            setRoutine(routineRT);
-          });
-        } else {
-          setUser(null);
-          navigation.navigate("Login");
-        }
-      });
-      return unsubscribe;
+      user &&
+        onSnapshot(doc(db, "users", user.uid), (doc) => {
+          const response = doc.data();
+          const routineRT = response.routine;
+          setShowSpinner(false);
+          setRoutine(routineRT);
+        });
+      !user && navigation.navigate("Login");
     }, [user])
   );
 

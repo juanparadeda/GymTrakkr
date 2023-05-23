@@ -1,38 +1,32 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, ScrollView, ActivityIndicator } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { onSnapshot, doc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../api/firestoreConfig";
+import { db } from "../api/firestoreConfig";
 import { removeTrainingFromTrainings } from "../api/firestoreController";
 import { startCase } from "lodash";
 import { ListItem, Icon } from "@rneui/themed";
+import { AuthContext } from "../context/AuthContext";
 
 const Trainings = ({ navigation }) => {
-  const [user, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
   const [history, setHistory] = useState([]);
   const [showSpinner, setShowSpinner] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
-      const unsubscribe = onAuthStateChanged(auth, (userFirebase) => {
-        setShowSpinner(true);
-        if (userFirebase) {
-          setUser(userFirebase);
-          onSnapshot(doc(db, "users", userFirebase.uid), (doc) => {
-            const response = doc.data();
-            const historySorted = response.trainings?.sort((a, b) => {
-              return a.rawDate > b.rawDate ? -1 : 1;
-            });
-            setShowSpinner(false);
-            historySorted && setHistory(historySorted);
+      if (user) {
+        onSnapshot(doc(db, "users", user.uid), (doc) => {
+          const response = doc.data();
+          const historySorted = response.trainings?.sort((a, b) => {
+            return a.rawDate > b.rawDate ? -1 : 1;
           });
-        } else {
-          setUser(null);
-          navigation.navigate("Login");
-        }
-      });
-      return unsubscribe;
+          setShowSpinner(false);
+          historySorted && setHistory(historySorted);
+        });
+      } else {
+        navigation.navigate("Login");
+      }
     }, [])
   );
 
